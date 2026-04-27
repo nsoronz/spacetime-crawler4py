@@ -1,13 +1,37 @@
 import re
 from bs4 import BeautifulSoup
-from urllib.parse import urlsplit
-import urllib
+from urllib.parse import urlsplit, urljoin, urldefrag
+#import urllib
+
+seen = set()
+# took stopwords from the link provided by prof
+# need to ignore these
+stop_words = {
+    "a","about","above","after","again","against","all","am","an","and","any",
+    "are","aren't","as","at","be","because","been","before","being","below",
+    "between","both","but","by","can't","cannot","could","couldn't","did",
+    "didn't","do","does","doesn't","doing","don't","down","during","each",
+    "few","for","from","further","had","hadn't","has","hasn't","have",
+    "haven't","having","he","he'd","he'll","he's","her","here","here's",
+    "hers","herself","him","himself","his","how","how's","i","i'd","i'll",
+    "i'm","i've","if","in","into","is","isn't","it","it's","its","itself",
+    "let's","me","more","most","mustn't","my","myself","no","nor","not",
+    "of","off","on","once","only","or","other","ought","our","ours",
+}
+words = {} # 50 most common words; maps every word to how many times it appeared across all pages crawled
+pages = {} #  maps every URL to the number of words on that page
+subdomains = {} 
 
 
 def scraper(url, resp):
+    result = []
     links = extract_next_links(url, resp)
+    for link in links:
+        if is_valid(link) and link not in seen:
+            seen.add(link)
+            result.append(link)
+    return result
     # defragged link??
-    return [link for link in links if is_valid(link)]
     # return [urllib.parse.urldefrag(link) for link in links if is_valid(link)]
 
 def extract_next_links(url, resp):
@@ -20,16 +44,15 @@ def extract_next_links(url, resp):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
-    validHyperLinks = []
-    soup = BeautifulSoup(resp.raw_response.content, 'html.parser')
-
-    # do we need to put the current url for this function?
-    if resp.status == 200:
-        for link in soup.find_all('a'):
-            validHyperLinks.append(link.get('href')) 
-
-    return validHyperLinks
-
+    if resp.status == 200 and resp.raw_response and resp.raw_response.content:
+        soup = BeautifulSoup(resp.raw_response.content, 'html.parser')
+        links = []
+        for tag in soup.find_all('a', href=True):
+            absolute = urljoin(url, tag['href'])
+            defragged, _ = urldefrag(absolute)
+            links.append(defragged)
+        return links
+    return []
 # is this desirable, want to keep the url or not. both of these functions already have url to work on. 
 # do you want it or do you not, decide the code for it.
 # 
@@ -42,16 +65,28 @@ def is_valid(url):
     try:    
         # do not download zip files!! the href says .zip
         # for calendars, there is no ending, there is an infinite trap, we must consider that
-        print("TYPE ", type(parsed.netloc))
+        #print("TYPE ", type(parsed.netloc))
+        if parsed.scheme not in {"http", "https"}:
+            return False
+        
+        if not parsed.netloc.endswith((".ics.uci.edu", ".cs.uci.edu", ".informatics.uci.edu",".stat.uci.edu")):
+            return False
+        
+        """ Calender Trap Detection """
+        if "date=" in url:
+            return False
 
+        if re.search(r"/calendar", parsed.path.lower()):
+            return False
+        
         # print("HELLOOOO ", parsed.netloc)
-        correctUrl = False
-        if "ics.uci.edu" in parsed.netloc or "cs.uci.edu" in parsed.netloc or "informatics.uci.edu" in parsed.netloc or "stat.uci.edu" in parsed.netloc:
-            correctUrl = True
+        #correctUrl = False
+        #if "ics.uci.edu" in parsed.netloc or "cs.uci.edu" in parsed.netloc or "informatics.uci.edu" in parsed.netloc or "stat.uci.edu" in parsed.netloc:
+            #correctUrl = True
             
         # defragging url? urllib.parse.urldefrag(url)
-        if parsed.scheme not in set(["http", "https"]):
-            return False
+        #if parsed.scheme not in set(["http", "https"]):
+            #return False
         
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
@@ -61,7 +96,7 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()) and correctUrl
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())
 
     except TypeError:
         print ("TypeError for ", parsed)
