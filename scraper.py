@@ -46,13 +46,66 @@ def extract_next_links(url, resp):
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
     if resp.status == 200 and resp.raw_response and resp.raw_response.content:
         soup = BeautifulSoup(resp.raw_response.content, 'html.parser')
+
+        for tag in soup(["script", "style", "noscript"]):
+            tag.decompose()
+
+        text = soup.get_text(separator=" ") # ensures that there is space between words
+
+        clean_url, _ = urldefrag(url)  # remove fragment (#...)
+
+        # only process page once (prevents duplicate counting)
+        if clean_url not in pages:
+
+            all_tokens = []  # stores ALL words (no stopword removal for Q2)
+
+            for word in text.split():
+                word = word.lower()
+
+                # remove punctuation from start/end
+                word = word.strip(".,!?;:\"'()[]{}<>")
+
+                # keep only alphabetic words of length ≥ 2
+                if word.isalpha() and len(word) >= 2:
+                    all_tokens.append(word)
+
+            # store word count for this page (used for longest page)
+            pages[clean_url] = len(all_tokens)
+
+            tokens = []  # stores filtered words (without stopwords)
+
+            for word in all_tokens:
+                if word not in stop_words:
+                    tokens.append(word)
+
+            # count frequencies
+            for w in tokens:
+                if w in words:
+                    words[w] += 1
+                else:
+                    words[w] = 1
+
+            parsed_url = urlsplit(clean_url)  # scheme="https", netloc="vision.ics.uci.edu", path="/page"
+            netloc = parsed_url.netloc.lower()  # Extract the domain (netloc) and convert to lowercase
+
+            if netloc.endswith(".uci.edu"):
+                if netloc not in subdomains:
+                    subdomains[netloc] = set()
+
+                # store unique pages per subdomain
+                subdomains[netloc].add(clean_url)
+        
         links = []
         for tag in soup.find_all('a', href=True):
-            absolute = urljoin(url, tag['href'])
-            defragged, _ = urldefrag(absolute)
+            absolute = urljoin(url, tag['href'])  # convert relative → absolute URL
+            defragged, _ = urldefrag(absolute)    # remove fragment (#...)
             links.append(defragged)
+
         return links
+
     return []
+
+        
 # is this desirable, want to keep the url or not. both of these functions already have url to work on. 
 # do you want it or do you not, decide the code for it.
 # 
