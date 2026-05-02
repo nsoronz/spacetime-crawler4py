@@ -97,9 +97,12 @@ def extract_next_links(url, resp):
         
         links = []
         for tag in soup.find_all('a', href=True):
-            absolute = urljoin(url, tag['href'])  # convert relative → absolute URL
-            defragged, _ = urldefrag(absolute)    # remove fragment (#...)
-            links.append(defragged)
+            try:
+                absolute = urljoin(url, tag['href'])  # convert relative → absolute URL
+                defragged, _ = urldefrag(absolute)    # remove fragment (#...)
+                links.append(defragged)
+            except Exception:
+                continue
 
         return links
 
@@ -125,11 +128,23 @@ def is_valid(url):
                     return False
             if "do=media" in url:
                 return False
-            if "start?" in url:
+            if "start?" in url or ".war":
                 return False
             if "fireeyeendpointexample.png" in url:
                 return False
         if "https://grape.ics.uci.edu/wiki/public/wiki" in url and "cs" not in url:
+            return False
+        
+        if ".png" in url or ".mp3" in url or ".jpg" in url or ".gif" in url or ".mp4" in url:
+            return False
+
+        if "wics" in url and "/events" in url:
+            return False
+        
+        if ".war" in url:
+            return False
+
+        if ".mpg" in url or "format=txt" in url:
             return False
 
         if "wiki/public/timeline" in url:
