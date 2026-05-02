@@ -44,18 +44,65 @@ def extract_next_links(url, resp):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
-    if resp is None:
-        return []
-    
-
     if resp.status == 200 and resp.raw_response and resp.raw_response.content:
         soup = BeautifulSoup(resp.raw_response.content, 'html.parser')
+
+        for tag in soup(["script", "style", "noscript"]):
+            tag.decompose()
+
+        text = soup.get_text(separator=" ") # ensures that there is space between words
+
+        clean_url, _ = urldefrag(url)  # remove fragment (#...)
+
+        # only process page once (prevents duplicate counting)
+        if clean_url not in pages:
+
+            all_tokens = []  # stores ALL words (no stopword removal for Q2)
+
+            for word in text.split():
+                word = word.lower()
+
+                # remove punctuation from start/end
+                word = word.strip(".,!?;:\"'()[]{}<>")
+
+                # keep only alphabetic words of length ≥ 2
+                if word.isalpha() and len(word) >= 2:
+                    all_tokens.append(word)
+
+            # store word count for this page (used for longest page)
+            pages[clean_url] = len(all_tokens)
+
+            tokens = []  # stores filtered words (without stopwords)
+
+            for word in all_tokens:
+                if word not in stop_words:
+                    tokens.append(word)
+
+            # count frequencies
+            for w in tokens:
+                if w in words:
+                    words[w] += 1
+                else:
+                    words[w] = 1
+
+            parsed_url = urlsplit(clean_url)  # scheme="https", netloc="vision.ics.uci.edu", path="/page"
+            netloc = parsed_url.netloc.lower()  # Extract the domain (netloc) and convert to lowercase
+
+            if netloc.endswith(".uci.edu"):
+                if netloc not in subdomains:
+                    subdomains[netloc] = set()
+
+                # store unique pages per subdomain
+                subdomains[netloc].add(clean_url)
+        
         links = []
         for tag in soup.find_all('a', href=True):
-            absolute = urljoin(url, tag['href'])
-            defragged, _ = urldefrag(absolute)
+            absolute = urljoin(url, tag['href'])  # convert relative → absolute URL
+            defragged, _ = urldefrag(absolute)    # remove fragment (#...)
             links.append(defragged)
+
         return links
+
     return []
 
 def is_valid(url):
@@ -70,8 +117,40 @@ def is_valid(url):
         #print("TYPE ", type(parsed.netloc))
         if url is None:
             return False
+        
+        if "wiki.ics.uci.edu" in url:
+            if "projects:" in url:
+                project_index = url.find("projects:")
+                if project_index + 9 < len(url):
+                    return False
+            if "do=media" in url:
+                return False
+            if "start?" in url:
+                return False
+            if "fireeyeendpointexample.png" in url:
+                return False
+        if "https://grape.ics.uci.edu/wiki/public/wiki" in url and "cs" not in url:
+            return False
 
-        if ".zip" in url or ".pdf" in url:
+        if "wiki/public/timeline" in url:
+            return False
+        
+        if "https://grape.ics.uci.edu/wiki/public/wiki" == url:
+            return False
+
+        if "do=login" in url or "doku.php/webapps" in url or "do=index" in url or "do=recent" in url or "do=" in url or "group:support" in url or "requesttracker" in url:
+            return False
+        
+        if "https://wiki.ics.uci.edu/doku.php/accounts" == url:
+            return False
+
+        if ".ppsx" in url:
+            return False
+                
+        if "difftype=sidebyside" in url:
+            return False
+
+        if "zip" in url or "pdf" in url:
             return False
             
         if parsed.scheme not in {"http", "https"}:
@@ -80,8 +159,11 @@ def is_valid(url):
         if not parsed.netloc.endswith((".ics.uci.edu", ".cs.uci.edu", ".informatics.uci.edu",".stat.uci.edu")):
             return False
         
+        if "?idx=" in url:
+            return False
+
         """ Calender Trap Detection """
-        if "date=" in url:
+        if "date=" in url or "/events" in url or "ical=" in url:
             return False
 
         if re.search(r"/calendar", parsed.path.lower()):
