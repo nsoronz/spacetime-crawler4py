@@ -52,22 +52,22 @@ class Frontier(object):
                         if ".ics.uci.edu" not in self.to_be_downloaded:
                             self.to_be_downloaded[".ics.uci.edu"] = [[],[]]
                         self.to_be_downloaded[".ics.uci.edu"][0].append(url)
-                        self.to_be_downloaded[".ics.uci.edu"][1] = time.time()
+                        self.to_be_downloaded[".ics.uci.edu"][1] = 0
                     elif parsed.netloc.endswith(".cs.uci.edu"):
                         if ".cs.uci.edu" not in self.to_be_downloaded:
                             self.to_be_downloaded[".cs.uci.edu"] = [[],[]]
                         self.to_be_downloaded[".cs.uci.edu"][0].append(url)
-                        self.to_be_downloaded[".cs.uci.edu"][1] = time.time()
+                        self.to_be_downloaded[".cs.uci.edu"][1] = 0
                     elif parsed.netloc.endswith(".informatics.uci.edu"):
                         if ".informatics.uci.edu" not in self.to_be_downloaded:
                             self.to_be_downloaded[".informatics.uci.edu"] = [[],[]]
                         self.to_be_downloaded[".informatics.uci.edu"][0].append(url)
-                        self.to_be_downloaded[".informatics.uci.edu"][1] = time.time()
+                        self.to_be_downloaded[".informatics.uci.edu"][1] = 0
                     elif parsed.netloc.endswith(".stat.uci.edu"):
                         if ".stat.uci.edu" not in self.to_be_downloaded:
                             self.to_be_downloaded[".stat.uci.edu"] = [[],[]]
                         self.to_be_downloaded[".stat.uci.edu"][0].append(url)
-                        self.to_be_downloaded[".stat.uci.edu"][1] = time.time()
+                        self.to_be_downloaded[".stat.uci.edu"][1] = 0
                     # self.to_be_downloaded.append(url)
                     tbd_count += 1
             self.logger.info(
@@ -76,31 +76,27 @@ class Frontier(object):
 
     def get_tbd_url(self):
         try:
-            with self.r_lock:
-                # were going to use domain of link later!
-                domain_of_link = ""
-                
-                # checking each domain's time value in the dictionary to make sure it fits within the 500ms politeness policy
-                # if there is another domain available, it will return a link from that domain
-                # if there is no other domain
-                for domain in self.to_be_downloaded:
-                    present_time = time.time()
-                    if self.to_be_downloaded[domain]:
-                        prev_time = self.to_be_downloaded[domain][1]
-                        domain_of_link = domain
-                        if present_time - prev_time >= 0.5:
-                            self.to_be_downloaded[domain][1] = present_time
-                            return self.to_be_downloaded[domain][0].pop()
-                        # else:
-                        #     print("GOING TO SLEEP!! ", present_time - prev_time)
-                        
+            while True:
+                with self.r_lock:
+                    # were going to use domain of link later!
+                    domain_of_link = ""
+                    
+                    # checking each domain's time value in the dictionary to make sure it fits within the 500ms politeness policy
+                    # if there is another domain available, it will return a link from that domain
+                    # if there is no other domain
+                    for domain in self.to_be_downloaded:
+                        present_time = time.time()
+                        if self.to_be_downloaded[domain][0]:
+                            prev_time = self.to_be_downloaded[domain][1]
+                            domain_of_link = domain
+                            if present_time - prev_time >= 0.5:
+                                self.to_be_downloaded[domain][1] = present_time
+                                return self.to_be_downloaded[domain][0].pop()
+                    
+                    if not domain_of_link:
+                        return None
+
                 time.sleep(0.5)
-                
-                if domain_of_link:
-                    self.to_be_downloaded[domain_of_link][1] = present_time
-                    return self.to_be_downloaded[domain_of_link][0].pop()
-                
-                return None
 
         except IndexError:
             return None
@@ -122,22 +118,22 @@ class Frontier(object):
                     if ".ics.uci.edu" not in self.to_be_downloaded:
                         self.to_be_downloaded[".ics.uci.edu"] = [[],[]]
                     self.to_be_downloaded[".ics.uci.edu"][0].append(url)
-                    self.to_be_downloaded[".ics.uci.edu"][1] = time.time()
+                    self.to_be_downloaded[".ics.uci.edu"][1] = 0
                 elif parsed.netloc.endswith(".cs.uci.edu"):
                     if ".cs.uci.edu" not in self.to_be_downloaded:
                         self.to_be_downloaded[".cs.uci.edu"] = [[],[]]
                     self.to_be_downloaded[".cs.uci.edu"][0].append(url)
-                    self.to_be_downloaded[".cs.uci.edu"][1] = time.time()
+                    self.to_be_downloaded[".cs.uci.edu"][1] = 0
                 elif parsed.netloc.endswith(".informatics.uci.edu"):
                     if ".informatics.uci.edu" not in self.to_be_downloaded:
                         self.to_be_downloaded[".informatics.uci.edu"] = [[],[]]
                     self.to_be_downloaded[".informatics.uci.edu"][0].append(url)
-                    self.to_be_downloaded[".informatics.uci.edu"][1] = time.time()
+                    self.to_be_downloaded[".informatics.uci.edu"][1] = 0
                 elif parsed.netloc.endswith(".stat.uci.edu"):
                     if ".stat.uci.edu" not in self.to_be_downloaded:
                         self.to_be_downloaded[".stat.uci.edu"] = [[],[]]
                     self.to_be_downloaded[".stat.uci.edu"][0].append(url)
-                    self.to_be_downloaded[".stat.uci.edu"][1] = time.time()
+                    self.to_be_downloaded[".stat.uci.edu"][1] = 0
     
     def mark_url_complete(self, url):
         with self.r_lock:

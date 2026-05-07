@@ -1,6 +1,7 @@
 import re
 from bs4 import BeautifulSoup
 from urllib.parse import urlsplit, urljoin, urldefrag
+import atexit # we use this because even if crawler crashes you will still have the report
 #import urllib
 
 seen = set()
@@ -97,12 +98,9 @@ def extract_next_links(url, resp):
         
         links = []
         for tag in soup.find_all('a', href=True):
-            try:
-                absolute = urljoin(url, tag['href'])  # convert relative → absolute URL
-                defragged, _ = urldefrag(absolute)    # remove fragment (#...)
-                links.append(defragged)
-            except Exception:
-                continue
+            absolute = urljoin(url, tag['href'])  # convert relative → absolute URL
+            defragged, _ = urldefrag(absolute)    # remove fragment (#...)
+            links.append(defragged)
 
         return links
 
@@ -128,7 +126,7 @@ def is_valid(url):
                     return False
             if "do=media" in url:
                 return False
-            if "start?" in url or ".war":
+            if "start?" in url or ".war" in url:
                 return False
             if "fireeyeendpointexample.png" in url:
                 return False
@@ -206,3 +204,46 @@ def is_valid(url):
     except TypeError:
         print ("TypeError for ", parsed)
         raise
+
+def print_report():
+    with open("report.txt", "w") as f:
+
+        # unique pages
+        f.write(f"Unique pages found: {len(pages)}\n")
+
+        # longest page
+        if pages:
+            longest = None
+            highest = 0
+            for url, count in pages.items():
+                if count > highest:
+                    highest = count
+                    longest = url
+            f.write(f"Longest page: {longest}\n")
+            f.write(f"Word count: {highest}\n")
+        else:
+            f.write("No pages crawled\n")
+
+        # top 50 words
+        f.write("\nTop 50 most common words:\n")
+
+        def get_count(item):
+            return item[1]
+
+        sorted_words = sorted(words.items(), key=get_count, reverse=True)
+        top_50 = sorted_words[:50]
+
+        rank = 1
+        for word, count in top_50:
+            f.write(f"{rank}. {word} {count}\n")
+            rank += 1
+
+        # subdomains
+        f.write(f"\nSubdomains found ({len(subdomains)} total):\n")
+        for subdomain in sorted(subdomains):
+            f.write(f"  {subdomain}, {len(subdomains[subdomain])}\n")
+
+    print("Report written to report.txt")
+
+
+atexit.register(print_report)
