@@ -98,9 +98,12 @@ def extract_next_links(url, resp):
         
         links = []
         for tag in soup.find_all('a', href=True):
-            absolute = urljoin(url, tag['href'])  # convert relative → absolute URL
-            defragged, _ = urldefrag(absolute)    # remove fragment (#...)
-            links.append(defragged)
+            try:
+                absolute = urljoin(url, tag['href'])  # convert relative → absolute URL
+                defragged, _ = urldefrag(absolute)    # remove fragment (#...)
+                links.append(defragged)
+            except Exception:
+                continue
 
         return links
 
@@ -111,14 +114,17 @@ def is_valid(url):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
-    parsed = urlsplit(url)
+    
     try:    
+        
         # do not download zip files!! the href says .zip
         # for calendars, there is no ending, there is an infinite trap, we must consider that
         #print("TYPE ", type(parsed.netloc))
         if url is None:
             return False
-        
+
+        parsed = urlsplit(url)
+
         if "wiki.ics.uci.edu" in url:
             if "projects:" in url:
                 project_index = url.find("projects:")
@@ -201,9 +207,8 @@ def is_valid(url):
             + r"|thmx|mso|arff|rtf|jar|csv"
             + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())
 
-    except TypeError:
-        print ("TypeError for ", parsed)
-        raise
+    except Exception:
+        return False
 
 def print_report():
     with open("report.txt", "w") as f:

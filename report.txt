@@ -1,95 +1,113 @@
-Unique pages found: 8116
-Longest page: https://grape.ics.uci.edu/wiki/public/raw-attachment/wiki/cs122b-2017-winter-project1/data.sql
-Word count: 13419
+Unique pages found: 12387
+Longest page: https://grape.ics.uci.edu/wiki/public/raw-attachment/wiki/cs221-2019-spring-project2/Team2StressTest.txt
+Word count: 118677
 
 Top 50 most common words:
-1. the 179067
-2. to 99278
-3. you 40616
-4. years 31446
-5. ago 29839
-6. added 28661
-7. that 27319
-8. this 27140
-9. will 26482
-10. project 25194
-11. your 24482
-12. kb 23212
-13. with 17695d
-14. we 14741
-15. students 14241
-16. ramesh 13618
-17. data 13559
-18. can 13147
-19. use 12669
-20. chenli 12013
-21. should 11669
-22. search 11037
-23. using 10871
-24. information 10823
-25. file 10340
-26. projects 9736
-27. version 9362
-28. page 9361
-29. ics 9068
-30. course 8825
-31. jain 8522
-32. trac 8081
-33. database 7883
-34. time 7454
-35. notes 7445
-36. current 7369
-37. make 7272
-38. research 7257
-39. read 7079
-40. insert 6856
-41. changes 6705
-42. please 6656
-43. lecture 6509
-44. past 6425
-45. wiki 6357
-46. pm 6312
-47. so 6307
-48. change 6207
-49. see 6159
-50. class 6047
+1. the 359575
+2. to 196944
+3. you 81524
+4. years 57782
+5. ago 54719
+6. will 53930
+7. added 52990
+8. project 51945
+9. that 51771
+10. this 50738
+11. your 49163
+12. kb 40172
+13. with 36525
+14. we 28662
+15. can 27745
+16. data 26179
+17. students 25495
+18. use 24779
+19. should 22946
+20. chenli 22069
+21. file 21010
+22. using 20085
+23. database 18531
+24. course 18376
+25. information 18240
+26. version 17532
+27. search 17471
+28. projects 16796
+29. page 16486
+30. lecture 16101
+31. trac 15392
+32. time 14793
+33. ramesh 14008
+34. research 13931
+35. make 13507
+36. please 13145
+37. systems 12963
+38. pm 12735
+39. ics 12675
+40. so 12408
+41. changes 12302
+42. change 12216
+43. management 12196
+44. class 12168
+45. software 12162
+46. also 11824
+47. two 11792
+48. new 11450
+49. uci 11368
+50. notes 11300
 
-Subdomains found (66 total):
-  acoi.ics.uci.edu, 39
+Subdomains found (97 total):
+  accessibility.ics.uci.edu, 6
+  acoi.ics.uci.edu, 112
   archive-beta.ics.uci.edu, 11
   archive.ics.uci.edu, 220
+  asterix.ics.uci.edu, 7
   betapro.proteomics.ics.uci.edu, 4
   bit.ics.uci.edu, 1
   cdb.ics.uci.edu, 49
+  cert.ics.uci.edu, 34
   checkin.ics.uci.edu, 7
   chemdb.ics.uci.edu, 48
-  chenli.ics.uci.edu, 2
+  chenli.ics.uci.edu, 10
   cloudberry.ics.uci.edu, 8
-  cml.ics.uci.edu, 1
+  cml.ics.uci.edu, 265
   code.ics.uci.edu, 14
-  computableplant.ics.uci.edu, 82
+  computableplant.ics.uci.edu, 118
   containers.ics.uci.edu, 1
-  courselisting.ics.uci.edu, 3
+  courselisting.ics.uci.edu, 4
+  create.ics.uci.edu, 4
+  cs.ics.uci.edu, 12
   dale-cooper-v0.ics.uci.edu, 222
   deeprxn.ics.uci.edu, 31
   dgillen.ics.uci.edu, 32
+  ds4all.ics.uci.edu, 9
+  duttgroup.ics.uci.edu, 139
+  dynamo.ics.uci.edu, 33
   e2.ics.uci.edu, 2
   elms.ics.uci.edu, 3
-  emj.ics.uci.edu, 9
+  emj.ics.uci.edu, 45
+  evoke.ics.uci.edu, 4
   flamingo.ics.uci.edu, 29
   fr.ics.uci.edu, 3
+  futurehealth.ics.uci.edu, 120
   gitlab.ics.uci.edu, 3
-  grape.ics.uci.edu, 2761
+  grape.ics.uci.edu, 5241
   graphics.ics.uci.edu, 1
   helpdesk.ics.uci.edu, 4
   hobbes.ics.uci.edu, 11
+  hpi.ics.uci.edu, 5
   hub.ics.uci.edu, 4
-  industryshowcase.ics.uci.edu, 4
-  informatics.ics.uci.edu, 14
+  i-sensorium.ics.uci.edu, 5
+  iasl.ics.uci.edu, 1
+  icde2023.ics.uci.edu, 46
+  industryshowcase.ics.uci.edu, 24
+  informatics.ics.uci.edu, 27
   intranet.ics.uci.edu, 16
   ipubmed.ics.uci.edu, 1
+  isg.ics.uci.edu, 272
+  jgarcia.ics.uci.edu, 40
   julia-hub.ics.uci.edu, 2
-  mailman.ics.uci.edu, 35
+  luci.ics.uci.edu, 4
+  mailman.ics.uci.edu, 38
+  malek.ics.uci.edu, 1
   mcs.ics.uci.edu, 12
   mds.ics.uci.edu, 8
   mhcid.ics.uci.edu, 19
@@ -98,26 +116,39 @@ Subdomains found (66 total):
   mswe.ics.uci.edu, 10
   mupro.proteomics.ics.uci.edu, 3
   myip.ics.uci.edu, 1
+  nalini.ics.uci.edu, 7
   netreg.ics.uci.edu, 3
   ngs.ics.uci.edu, 2002
+  oai.ics.uci.edu, 6
   onboarding.ics.uci.edu, 4
   password.ics.uci.edu, 9
   pepito.proteomics.ics.uci.edu, 5
   psearch.ics.uci.edu, 1
+  radicle.ics.uci.edu, 6
+  riscit.ics.uci.edu, 1
+  scale.ics.uci.edu, 7
   scratch.proteomics.ics.uci.edu, 4
+  seal.ics.uci.edu, 50
   selectpro.proteomics.ics.uci.edu, 7
   sherlock.ics.uci.edu, 7
   speedtest.ics.uci.edu, 1
   staging-hub.ics.uci.edu, 2
-  stat.ics.uci.edu, 1
+  stairs.ics.uci.edu, 3
+  stat.ics.uci.edu, 11
+  summeracademy.ics.uci.edu, 12
   support.ics.uci.edu, 10
   swiki.ics.uci.edu, 189
   tad.ics.uci.edu, 3
   tastier.ics.uci.edu, 1
+  tutoring.ics.uci.edu, 5
+  unite.ics.uci.edu, 10
   vision.ics.uci.edu, 212
   wics.ics.uci.edu, 565
   wiki.ics.uci.edu, 307
+  www-db.ics.uci.edu, 25
   www.cs.uci.edu, 2
-  www.ics.uci.edu, 854
-  www.informatics.uci.edu, 16
+  www.ics.uci.edu, 1294
+  www.informatics.ics.uci.edu, 6
+  www.informatics.uci.edu, 17
   www.stat.uci.edu, 3
+  xtune.ics.uci.edu, 6
